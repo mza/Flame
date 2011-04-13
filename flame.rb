@@ -26,6 +26,7 @@ while true
     puts "Requests: #{load}"
     (1..load).each_with_index do |i, index|
       puts "[ #{index} of #{load} ] #{url}"
+      Net::HTTP.get_print URI.parse(url)
     end
   end
   sleep 5
