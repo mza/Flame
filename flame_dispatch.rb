@@ -8,8 +8,9 @@ key = options['key']
 secret = options['secret']
 queue_name = options['queue'] || 'flame_default'
 
-load = ARGV[0]
-url = ARGV[1]
+workers = ARGV[0]
+load = ARGV[1]
+url = ARGV[2]
 
 payload = { 'url' => url, 'load' => load.to_i }
 
@@ -19,4 +20,7 @@ puts queue_name
 sqs = RightAws::SqsGen2.new(key, secret)
 queue = sqs.queue(queue_name)
 
-queue.send_message(payload.to_yaml)
+(1..workers.to_i).each_with_index do |i, index| 
+  puts "Scheduling Flame run: #{i} of #{workers}"
+  queue.send_message(payload.to_yaml)
+end
