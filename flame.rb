@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'right_aws'
 require 'yaml'
+require 'net/http'
+require 'uri'
 
 options = YAML::load(File.open('config.yml'))
 
@@ -17,7 +19,14 @@ while true
   puts 'Popping queue'
   message = queue.pop
   if message
-    puts "Received: #{message}"
+    payload = YAML.parse(message.to_s)
+    url = payload['url'].value
+    load = payload['load'].value.to_i
+    puts "Requesting: #{url}"
+    puts "Requests: #{load}"
+    (1..load).each_with_index do |i, index|
+      puts "[ #{index} of #{load} ] #{url}"
+    end
   end
   sleep 5
 end
