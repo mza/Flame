@@ -40,7 +40,9 @@ while true
       puts "Requesting: #{url}"
       puts "Requests: #{load}"
       (1..load).each_with_index do |i, index|
-        puts "[ #{index} of #{load} ] #{url}"
+        Flame.time_method('Request time') do
+          puts "[ #{index} of #{load} ] #{url}"
+        end
         # Net::HTTP.get_print URI.parse(url)
       end
       puts "Flamed!"
