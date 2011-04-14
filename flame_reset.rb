@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'right_aws'
+require 'yaml'
 
 options = YAML::load(File.open('config.yml'))
 
@@ -13,3 +15,5 @@ results_queue = sqs.queue(results_queue_name)
 
 queue.clear
 results_queue.clear
+
+puts "Flame queues reset!"
