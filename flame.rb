@@ -3,6 +3,7 @@ require 'right_aws'
 require 'yaml'
 require 'net/http'
 require 'uri'
+require 'uuid'
 
 class Flame
   def self.time_method(flag='Time elapsed', method=nil, *args)
@@ -16,6 +17,7 @@ class Flame
     benchmark = (end_time - beginning_time)*1000
     return benchmark
   end
+  
 end
 
 options = YAML::load(File.open('config.yml'))
@@ -28,6 +30,9 @@ results_queue_name = options['queue'] || 'flame_results'
 sqs = RightAws::SqsGen2.new(key, secret)
 queue = sqs.queue(queue_name)
 results_queue = sqs.queue(results_queue_name)
+
+simpledb = RightAws::SdbInterface.new(key, secret)
+simpledb.create_domain(results_queue_name)
 
 while true
   message = queue.pop
@@ -43,8 +48,17 @@ while true
         end
         
         if benchmark
-          payload = { 'url' => url, 'stamp' => Time.now, 'time' => benchmark }
-          results_queue.send_message(payload.to_yaml)
+          attributes = { 'url' => url, 'stamp' => Time.now, 'time' => benchmark }          
+          
+          # via SQS:
+          # results_queue.send_message(payload.to_yaml)          
+          
+          # via SimpleDB:
+          uuid = UUID.new
+          guid = uuid.generate
+          puts "Saving to SimpleDB: #{guid}: #{benchmark}"
+          simpledb.put_attributes results_queue_name, guid, attributes
+          
         end
         
       end      
