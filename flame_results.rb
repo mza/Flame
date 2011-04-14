@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 require 'rubygems'
 require 'right_aws'
 require 'yaml'
@@ -34,7 +36,7 @@ while true
       puts "Result count: #{counter}"
       puts "Average load time so far: #{total/counter} ms"
     end
-    log.info "#{url}: #{stamp}: #{time}"  
+    log.info "#{url}, #{stamp}, #{time}"  
   end
   
 end

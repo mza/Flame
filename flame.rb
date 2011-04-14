@@ -14,7 +14,6 @@ class Flame
     end
     end_time = Time.now
     benchmark = (end_time - beginning_time)*1000
-    puts "#{flag}: #{end_time}: #{benchmark} milliseconds"
     return benchmark
   end
 end
@@ -26,14 +25,11 @@ secret = options['secret']
 queue_name = options['queue'] || 'flame_default'
 results_queue_name = options['queue'] || 'flame_results'
 
-puts queue_name
-
 sqs = RightAws::SqsGen2.new(key, secret)
 queue = sqs.queue(queue_name)
 results_queue = sqs.queue(results_queue_name)
 
 while true
-  puts 'Popping queue'
   message = queue.pop
   if message
     
@@ -41,11 +37,8 @@ while true
       payload = YAML.parse(message.to_s)
       url = payload['url'].value
       load = payload['load'].value.to_i
-      puts "Requesting: #{url}"
-      puts "Requests: #{load}"
       (1..load).each_with_index do |i, index|
         benchmark = Flame.time_method('Request time', true) do
-          puts "[ #{index} of #{load} ] #{url}"
           Net::HTTP.get URI.parse(url)
         end
         
@@ -55,7 +48,6 @@ while true
         end
         
       end      
-      puts "Flamed!"
     end
     
   end
