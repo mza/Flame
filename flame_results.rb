@@ -23,20 +23,21 @@ counter = 0.0
 total = 0.0
 
 while true
-  message = results_queue.pop
+  messages = results_queue.receive_messages(10,20)
   
-  if message 
+  messages.each do |message|
     payload = YAML.parse(message.to_s)
     url = payload['url'].value
     time = payload['time'].value  
     stamp = payload['stamp'].value  
     counter = counter + 1
     total = total + time.to_f
-    if (counter % 50) == 0
+    if (counter % 20) == 0
       puts "Result count: #{counter}"
       puts "Average load time so far: #{total/counter} ms"
     end
     log.info "#{url}, #{stamp}, #{time}"  
+    message.delete
   end
   
 end

@@ -16,30 +16,29 @@ Put your key and secret key in a file called 'config.yml', as show in the 'confi
 + Quick start
 
 Whilst Flame is designed to work in a distributed cloud environment, you can just as easily run smaller tests from your laptop. 
-You'll need the RightScale AWS gem:
+
+* You'll need the RightScale AWS gem:
 
 sudo gem install right_aws
 
-Add your AWS credentials to the config.yml file.
+* Add your AWS credentials to the config.yml file.
 
 key: 'EXAMPLE_KEY'
 secret: 'EXAMPLE_SECRET'
 
-Then start a single Flame worker, and leave it running:
+* Then start a single Flame worker, and leave it running:
 
 ruby flame.rb
 
-Start the Flame results monitor:
+* Start the Flame results monitor:
 
 ruby flame_results.rb
 
-Then dispatch a simple load test for the worker to perform:
+* Then dispatch a simple load test for the worker to perform:
 
 ruby flame_dispatch 1 50 http://your-ec2-instance-public-dns.amazonaws.com
 
-This will drive a single worker to request the above URL 50 times.
-
-After a while, you should see output from the results monitor:
+This will drive a single worker to request the above URL 50 times. After a while, you should see output from the results monitor:
 
 Result count: 50.0
 Average load time so far: 806.381204 ms
@@ -47,5 +46,26 @@ Average load time so far: 806.381204 ms
 You can also view the entire log in the results.txt file, in CSV format ready to import
 into the spreadsheet of your choice.
 
++ Distributing load
 
+Flame scales to many workers, and many levels of concurrency. Install Flame on an EC2 instance, and configure it to run at startup. Create an AMI, and instantiate the load testing fleet size of your choice. Spot instances are a good choice here.
 
+* Dispatch load test to workers
+
+Just as above, we can dispatch load tasks to our fleet of worker nodes. For example, if you have 50 instances each running 5 workers, you can start a full test with:
+
+ruby flame_dispatch 250 500 http://your-ec2-instance-public-dns.amazonaws.com
+
+This will start all 250 worker processes to drive 500 requests to the load test target. 
+
+* Collecting results
+
+You can still run the result monitor locally to collect the results.
+
+ruby flame_results.rb
+
+The above test will generate 250 * 50 results, 12500 responses, in the results.txt file so be prepared to deal with log files of that size. You can follow along in real time by tailing the results file.
+
+While the test is running you can monitor your application and instance metrics with tools such as NewRelic and CloudWatch.
+
+All times in Flame are in milliseconds.
