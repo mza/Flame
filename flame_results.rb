@@ -35,22 +35,52 @@ log.info "Flame results monitor: polling..."
   # Using SimpleDB
   
   simpledb = RightAws::SdbInterface.new(key, secret)
-  
+  counter = 0.0
+  total = 0.0
+    
   while true
+    old_counter = counter    
+    old_total = total
+    
     counter = 0.0
     total = 0.0
-    
+    page = 1
     query = "select time from #{results_queue_name} limit 2500"
+    
     results = simpledb.select(query)
     items = results[:items]
-  
-    puts "Result count: #{items.size}"  
+    next_token = results[:next_token]    
+    
+    puts "Select from SimpleDB: page #{page} -> #{items.size} items"
+
     items.each do |item|
       time = item[item.keys[0]]["time"][0]
       total = total + time.to_f
+      counter = counter + 1
     end
-    puts "Average load time: #{total/items.size}"
+    
+    while next_token
+      
+      page = page + 1      
+      results = simpledb.select(query, next_token)            
+      items = results[:items]
+      next_token = results[:next_token]    
+      
+      puts "Paging from SimpleDB: page #{page} -> #{items.size} items"
+    
+      items.each do |item|
+        time = item[item.keys[0]]["time"][0]
+        total = total + time.to_f
+        counter = counter + 1
+      end
+                            
+    end
+    
+    puts "Result count: #{counter}"      
+    puts "Average load time: #{total/counter}"
+    puts "Result delta: #{counter - old_counter} items"
     puts ""
+
     sleep 3
   end
   

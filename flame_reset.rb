@@ -12,8 +12,12 @@ results_queue_name = options['queue'] || 'flame_results'
 sqs = RightAws::SqsGen2.new(key, secret)
 queue = sqs.queue(queue_name)
 results_queue = sqs.queue(results_queue_name)
+simpledb = RightAws::SdbInterface.new(key, secret)
 
-queue.clear
-results_queue.clear
+puts "Clearing queues"
+queue.delete
+results_queue.delete
 
+puts "Cleaing SimpleDB"
+simpledb.delete_domain(results_queue_name)
 puts "Flame queues reset!"

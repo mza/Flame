@@ -41,10 +41,7 @@ ruby flame_dispatch 1 50 http://your-ec2-instance-public-dns.amazonaws.com
 This will drive a single worker to request the above URL 50 times. After a while, you should see output from the results monitor:
 
 Result count: 50.0
-Average load time so far: 806.381204 ms
-
-You can also view the entire log in the results.txt file, in CSV format ready to import
-into the spreadsheet of your choice.
+Average load time: 806.381204 ms
 
 + Distributing load
 
@@ -60,11 +57,9 @@ This will start all 250 worker processes to drive 500 requests to the load test 
 
 * Collecting results
 
-You can still run the result monitor locally to collect the results.
+You can still run the result monitor locally to view the results, which are stored in SimpleDB. Customise the select statement for more fine grained statistics.
 
 ruby flame_results.rb
-
-The above test will generate 250 * 50 results, 12500 responses, in the results.txt file so be prepared to deal with log files of that size. You can follow along in real time by tailing the results file.
 
 While the test is running you can monitor your application and instance metrics with tools such as NewRelic and CloudWatch.
 
