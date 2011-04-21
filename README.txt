@@ -57,7 +57,7 @@ This will start all 250 worker processes to drive 500 requests to the load test 
 
 * Collecting results
 
-You can still run the result monitor locally to view the results, which are stored in SimpleDB. Customise the select statement for more fine grained statistics.
+You can still run the result monitor locally to view the results, which are stored in SimpleDB. Customise the select statement for more fine grained statistics. Don't forget to empty the domains before re-running your load tests.
 
 ruby flame_results.rb
 
